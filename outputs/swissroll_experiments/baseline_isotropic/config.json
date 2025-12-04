@@ -2,7 +2,7 @@
   "name": "baseline_isotropic",
   "use_manifold": false,
   "mixed_noise": false,
-  "tangent_fraction": 0.0,
+  "tangent_fraction": 1.0,
   "normal_fraction": 1.0,
   "num_timesteps": 1000,
   "num_epochs": 5,

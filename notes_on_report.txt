@@ -1,0 +1,61 @@
+
+Introduction: 
+Introduce Diffusion
+
+Show that diffusion learns manifolds. 
+
+Show Swiss Roll. Describe function that creates Introduce
+- Show graph
+
+
+Show that the swiss roll has an orthnormal basis that is tangent and normal to the swiss roll
+- Show graph of the plane and normal
+
+
+
+Show that we can approx this by doing KNN and local PCA. 
+- Show the angle distance between the planes and normal with this technique for different k (num neighbours)
+
+Explain diffusion model. 
+Show that we are now adding ansitropic noise 
+- Show graph of isotropic noise
+- Show graph of ansitropic noise
+
+Show results:
+
+
+
+Taking out the tangent noise... 
+
+
+Introduce Diffusion 
+- Show poached images on diffusion 
+Claim: Diffusion learns manifold
+
+What we do: Can we use a technique that "learns manifold" to improve diffusion? 
+
+How noise is added in standard diffuion 
+- Show isotropic covariance. 
+- Show image of isotropic noise in 3D
+- SOME MATH
+
+We learn "tangent and normal" at a point using knn 
+- Show image of tangent and normal at some points on swiss roll.
+
+- KNN PCA -> Have an equation that shows this...
+
+Show example of noising process with ansitropic noise 
+- Show images of all tangent, all normal, and some weighted version. 
+
+- HAVE MATCH FOR THIS.
+
+Show results.
+
+
+Future Steps: 
+- Embed swiss roll in higher dimensions.
+- Torus or other known manifolds? 
+- New metrics: Generated Sample Spread?
+- Images? 
+- Convert images to vectors. Do the KNN local pca there and then see what happens. 
+

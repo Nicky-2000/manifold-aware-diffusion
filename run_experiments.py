@@ -43,7 +43,7 @@ def build_default_configs() -> List[SwissRollExperimentConfig]:
             name="baseline_isotropic",
             use_manifold=False,
             mixed_noise=False,
-            tangent_fraction=0.0,
+            tangent_fraction=1.0,
             normal_fraction=1.0,
             num_epochs=5,
             num_eval_samples=2000,

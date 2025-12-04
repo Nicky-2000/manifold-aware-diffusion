@@ -25,7 +25,7 @@ class SwissRollExperimentConfig:
 
     # Noise fractions (only matter if use_manifold=True)
     tangent_fraction: float = 1.0
-    normal_fraction: float = 0.0
+    normal_fraction: float = 1.0
 
     # Diffusion hyperparams
     num_timesteps: int = 1000

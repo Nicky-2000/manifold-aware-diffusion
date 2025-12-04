@@ -123,7 +123,7 @@ class DiffusionExperiment:
         else:
             # No manifold information or not using mixed noise:
             # fall back to isotropic Gaussian in noiser().
-            self.tangent_fraction = 0.0
+            self.tangent_fraction = 1.0
             self.normal_fraction = 1.0
         
         # Step 3: Initialize Model and Optimizer
