@@ -26,52 +26,53 @@ def build_default_configs(prefix: str = "") -> List[SwissRollExperimentConfig]:
         with internal normalization happening inside DiffusionExperiment.
     """
     configs: List[SwissRollExperimentConfig] = []
-    for num_epochs in range(5, 16, 5):
-        # Baseline: no manifold, standard normal noise
+    num_epochs = 20
+    # for num_epochs in range(5, 21, 5):
+    # Baseline: no manifold, standard normal noise
+    configs.append(
+        SwissRollExperimentConfig(
+            name=f"{prefix}baseline_full_normal_epochs{num_epochs}",
+            use_manifold=True,
+            mixed_noise=True,
+            tangent_fraction=0.0,
+            normal_fraction=1.0,
+            num_epochs=num_epochs,
+            num_eval_samples=2000,
+        )
+    )
+
+    # Baseline: no manifold, standard tangent noise
+    configs.append(
+        SwissRollExperimentConfig(
+            name=f"{prefix}baseline_full_tangent_epochs{num_epochs}",
+            use_manifold=True,
+            mixed_noise=True,
+            tangent_fraction=1.0,
+            normal_fraction=0.0,
+            num_epochs=num_epochs,
+            num_eval_samples=2000,
+        )
+    )
+
+    # Manifold-aware sweep over tangent/normal weights
+    # raw tangent_fraction = r, normal_fraction = 1.0
+    # DiffusionExperiment will internally normalize so that
+    # E||noise||^2 ~ D for all (r, 1.0).
+    ratios = np.linspace(1.0, 10.0, 10)  # 0, 0.5, 1, ..., 4
+
+    for r in ratios:
+        name = f"{prefix}tangent_ratio_{r/5:.2f}_epochs{num_epochs}"
         configs.append(
             SwissRollExperimentConfig(
-                name=f"{prefix}baseline_full_normal_epochs{num_epochs}",
+                name=name,
                 use_manifold=True,
                 mixed_noise=True,
-                tangent_fraction=0.0,
-                normal_fraction=1.0,
+                tangent_fraction=float(r),
+                normal_fraction=5.0,
                 num_epochs=num_epochs,
                 num_eval_samples=2000,
             )
         )
-
-        # Baseline: no manifold, standard tangent noise
-        configs.append(
-            SwissRollExperimentConfig(
-                name=f"{prefix}baseline_full_tangent_epochs{num_epochs}",
-                use_manifold=True,
-                mixed_noise=True,
-                tangent_fraction=1.0,
-                normal_fraction=0.0,
-                num_epochs=num_epochs,
-                num_eval_samples=2000,
-            )
-        )
-
-        # Manifold-aware sweep over tangent/normal weights
-        # raw tangent_fraction = r, normal_fraction = 1.0
-        # DiffusionExperiment will internally normalize so that
-        # E||noise||^2 ~ D for all (r, 1.0).
-        ratios = np.linspace(1.0, 10.0, 10)  # 0, 0.5, 1, ..., 4
-
-        for r in ratios:
-            name = f"{prefix}tangent_ratio_{r/5:.2f}_epochs{num_epochs}"
-            configs.append(
-                SwissRollExperimentConfig(
-                    name=name,
-                    use_manifold=True,
-                    mixed_noise=True,
-                    tangent_fraction=float(r),
-                    normal_fraction=5.0,
-                    num_epochs=num_epochs,
-                    num_eval_samples=2000,
-                )
-            )
 
     return configs
 
@@ -80,7 +81,7 @@ def main(output_dir: str = "outputs/full_swissroll_experiments", num_trials = 10
     os.makedirs(output_dir, exist_ok=True)
     results = []
 
-    for embed_dim in range(3, 4, 3): # Will only loop once, bc infrastructure for >3 not working
+    for embed_dim in range(4, 10, 1): # Will only loop once, bc infrastructure for >3 not working
         # -----------------------------
         # 1. Generate swiss roll data
         # -----------------------------
@@ -148,7 +149,7 @@ def main(output_dir: str = "outputs/full_swissroll_experiments", num_trials = 10
                 exp.diffusion_train(num_epochs=cfg.num_epochs)
 
                 # Sample
-                samples = exp.sample(num_samples=cfg.num_eval_samples)  # (N_gen, D) tensor
+                samples = exp.sample(num_samples=cfg.num_eval_samples, dim=embed_dim)  # (N_gen, D) tensor
                 samples_np = samples.detach().cpu().numpy()
 
                 # -----------------------------
@@ -200,16 +201,16 @@ def main(output_dir: str = "outputs/full_swissroll_experiments", num_trials = 10
             row["swiss_dist_std"] = swiss_std
             results.append(row)
 
-    # -----------------------------
-    # 7. Save and print summary
-    # -----------------------------
-    summary_path = os.path.join(output_dir, "summary.csv")
-    df = pd.DataFrame(results)
-    df.to_csv(summary_path, index=False)
+        # -----------------------------
+        # 7. Save and print summary
+        # -----------------------------
+        summary_path = os.path.join(output_dir, f"embed_dim_{embed_dim}_summary.csv")
+        df = pd.DataFrame(results)
+        df.to_csv(summary_path, index=False)
 
-    print("\n=== Summary of experiments ===")
-    print(df[["name", "use_manifold", "tangent_fraction", "normal_fraction", "chamfer_mean", "swiss_dist_mean"]])
-    print(f"\nSummary written to: {summary_path}")
+        print("\n=== Summary of experiments ===")
+        print(df[["name", "use_manifold", "tangent_fraction", "normal_fraction", "chamfer_mean", "swiss_dist_mean"]])
+        print(f"\nSummary written to: {summary_path}")
 
 
 if __name__ == "__main__":

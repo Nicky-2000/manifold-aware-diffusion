@@ -239,7 +239,7 @@ class DiffusionExperiment:
             avg_loss = epoch_loss / max(num_batches, 1)
             print(f"Epoch {epoch}: loss = {avg_loss:.6f}")
 
-    def sample(self, num_samples=1000):
+    def sample(self, dim=3, num_samples=1000):
         """
         Generates samples using the trained model via the reverse process.
         Returns:
@@ -251,7 +251,7 @@ class DiffusionExperiment:
             # Note: Sampling usually starts from Isotropic Gaussian even if training was different,
             # though consistent testing might require thinking about this. 
             # For now, we use Standard Gaussian for x_T.
-            x = torch.randn(num_samples, 3, device=self.device)
+            x = torch.randn(num_samples, dim, device=self.device)
             
             for t_idx in reversed(range(self.num_timesteps)):
                 t = torch.full((num_samples,), t_idx, device=self.device, dtype=torch.long)
