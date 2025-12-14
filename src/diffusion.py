@@ -113,7 +113,7 @@ class DiffusionExperiment:
             denom = d_t * (a0 ** 2) + max(d_n, 0) * (b0 ** 2)
             if denom <= 1e-8:
                 # Fallback: just use isotropic
-                self.tangent_fraction = 0.0
+                self.tangent_fraction = 1.0
                 self.normal_fraction = 1.0
             else:
                 target = D
